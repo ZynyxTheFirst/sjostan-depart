@@ -14,7 +14,7 @@
       "id": 740024929,
       "departures": [
         { "line": "30", "minTimeThreshold": 5 , "directions": ["Sickla"] },
-        { "line": "74", "minTimeThreshold": 2 },
+        { "line": "74", "minTimeThreshold": 2 , "directions": ["Sickla"]},
         { "line": "96", "minTimeThreshold": 2 , "directions": ["Sickla"] }
       ]
     }
