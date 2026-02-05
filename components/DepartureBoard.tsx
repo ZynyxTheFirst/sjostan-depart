@@ -31,13 +31,13 @@ const lineColorMap: Record<string, string> = {
 const REFRESH_INTERVAL = 30000;
 
 const commonPadding =
-  "px-1 sm:px-2 md:px-4 lg:px-6 py-3 sm:py-4 md:py-6 lg:py-8 2xl:px-8 2xl:py-10";
+  "px-1 sm:px-3 md:px-5 lg:px-6 py-3 sm:py-4 md:py-5 lg:py-6";
 const headerPadding =
-  "px-1 sm:px-2 md:px-3 lg:px-4 py-1 sm:py-1 md:py-3 lg:py-2 2xl:px-5 2xl:py-2";
+  "px-1 sm:px-2 md:px-3 lg:px-4 py-1 sm:py-2 md:py-3 lg:py-3";
 const headerTextSize =
-  "text-lg sm:text-xl md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl";
+  "text-lg sm:text-2xl md:text-4xl lg:text-4xl";
 const cellTextSize =
-  "text-lg sm:text-xl md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl";
+  "text-lg sm:text-2xl md:text-4xl lg:text-4xl";
 
 const getRowBackground = (index: number) =>
   index % 2 !== 0 ? "bg-[#0a0a0a]" : "bg-[#141414]";
@@ -172,7 +172,7 @@ export default function DepartureBoard({ rawDepartures }: DepartureBoardProps) {
                     <span
                       className={`${getLineColor(
                         lineType,
-                      )} rounded-lg sm:rounded-xl px-1.5 sm:px-2 md:px-3 py-0.5 sm:py-1 md:py-1.5 2xl:px-4 2xl:py-2 2xl:rounded-2xl font-bold ${cellTextSize} inline-block`}
+                      )} rounded-lg sm:rounded-xl px-1.5 sm:px-2 md:px-3 py-0.5 sm:py-1 md:py-1.5 font-bold ${cellTextSize} inline-block`}
                     >
                       {departure.name}
                     </span>

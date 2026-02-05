@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Foo Depart",
-  description: "Departures from Foo Bar",
+  title: "Sjöstan Avgångar",
+  description: "avgångar från sjöstan i stockholm",
 };
 
 export default function RootLayout({
