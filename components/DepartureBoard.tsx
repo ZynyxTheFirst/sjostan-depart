@@ -23,13 +23,12 @@ const iconMap: Record<string, string> = {
 
 const lineColorMap: Record<string, string> = {
   Tåg: "bg-[#ec619f]",
-  Tunnelbana: "bg-[#007db8]",
+  Tunnelbana: "bg-[#148541]",
   Buss: "bg-black",
   Spårväg: "bg-[#b65f1f]",
 };
 
 const REFRESH_INTERVAL = 30000;
-const MIN_ROWS = 5;
 
 const commonPadding =
   "px-1 sm:px-2 md:px-4 lg:px-6 py-3 sm:py-4 md:py-6 lg:py-8 2xl:px-8 2xl:py-10";
@@ -61,7 +60,7 @@ export default function DepartureBoard({ rawDepartures }: DepartureBoardProps) {
     return () => clearInterval(interval);
   }, [router]);
 
-  const placeholderRows = Math.max(MIN_ROWS - initialDepartures.length, 0);
+  // no placeholder rows — table rows match actual departures
   const lastUpdated = new Date().toLocaleTimeString("sv-SE", {
     timeZone: "Europe/Stockholm",
     hour12: false,
@@ -125,17 +124,17 @@ export default function DepartureBoard({ rawDepartures }: DepartureBoardProps) {
               <th
                 className={`${headerPadding} text-left whitespace-nowrap ${headerTextSize}`}
               >
-                Line
+                Linje
               </th>
               <th
                 className={`${headerPadding} text-left whitespace-nowrap ${headerTextSize} text-orange-500`}
               >
-                Departs
+                Avgår
               </th>
               <th
                 className={`${headerPadding} text-left whitespace-nowrap ${headerTextSize} text-orange-500`}
               >
-                Time
+                Tid
               </th>
               <th
                 className={`${headerPadding} text-left w-full ${headerTextSize}`}
@@ -145,7 +144,7 @@ export default function DepartureBoard({ rawDepartures }: DepartureBoardProps) {
               <th
                 className={`${headerPadding} text-right whitespace-nowrap ${headerTextSize} text-orange-500`}
               >
-                Next
+                Nästa
               </th>
             </tr>
           </thead>
@@ -214,31 +213,7 @@ export default function DepartureBoard({ rawDepartures }: DepartureBoardProps) {
               );
             })}
 
-            {Array.from({ length: placeholderRows }).map((_, index) => (
-              <tr
-                key={`placeholder-${index}`}
-                className={getRowBackground(initialDepartures.length + index)}
-              >
-                <td className={commonPadding}>
-                  <div className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 xl:w-12 xl:h-12 2xl:w-16 2xl:h-16 bg-gray-800 rounded"></div>
-                </td>
-                <td className={commonPadding}>
-                  <div className="w-8 h-4 sm:w-10 sm:h-5 md:w-14 md:h-6 lg:w-16 lg:h-8 xl:w-20 xl:h-10 2xl:w-24 2xl:h-12 bg-gray-800 rounded-lg"></div>
-                </td>
-                <td className={commonPadding}>
-                  <div className="w-12 h-4 sm:w-16 sm:h-5 md:w-20 md:h-6 lg:w-28 lg:h-8 xl:w-32 xl:h-10 2xl:w-40 2xl:h-12 bg-gray-800 rounded ml-auto"></div>
-                </td>
-                <td className={commonPadding}>
-                  <div className="w-14 h-4 sm:w-20 sm:h-5 md:w-28 md:h-6 lg:w-36 lg:h-8 xl:w-40 xl:h-10 2xl:w-48 2xl:h-12 bg-gray-800 rounded"></div>
-                </td>
-                <td className={commonPadding}>
-                  <div className="w-12 h-4 sm:w-14 sm:h-5 md:w-18 md:h-6 lg:w-20 lg:h-8 xl:w-24 xl:h-10 2xl:w-28 2xl:h-12 bg-gray-800 rounded"></div>
-                </td>
-                <td className={commonPadding}>
-                  <div className="w-12 h-4 sm:w-14 sm:h-5 md:w-18 md:h-6 lg:w-20 lg:h-8 xl:w-24 xl:h-10 2xl:w-28 2xl:h-12 bg-gray-800 rounded ml-auto"></div>
-                </td>
-              </tr>
-            ))}
+            {/* no placeholder rows */}
           </tbody>
         </table>
       </div>

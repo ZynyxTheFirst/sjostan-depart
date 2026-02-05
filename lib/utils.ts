@@ -2,7 +2,6 @@ import {
   DRÄGG_START_HOUR,
   DRÄGG_END_HOUR,
   DEFAULT_MIN_TIME_THRESHOLD,
-  MAX_DEPARTURES_TO_DISPLAY,
 } from "@/lib/constants";
 import { ApiDeparture, ProcessedDeparture, Station } from "./types";
 
@@ -173,24 +172,28 @@ export function processDepartures(
     departuresByLineAndDirection.set(key, existing);
   });
 
-  const departuresWithNext = allDepartures.map((dep) => {
-    const key = `${dep.name}|${dep.direction}`;
-    const sameLine = departuresByLineAndDirection.get(key) || [];
-    const currentIndex = sameLine.findIndex(
-      (d) => d.time === dep.time && d.station === dep.station,
-    );
-    const nextDep = sameLine[currentIndex + 1];
-
-    let nextDepartureTimeLeft: number | undefined = undefined;
-    if (nextDep && typeof nextDep.timeLeft === "number") {
-      nextDepartureTimeLeft = nextDep.timeLeft;
-    }
-
-    return {
-      ...dep,
-      nextDepartureTimeLeft,
-    };
+  // For each line+direction, pick the earliest departure and include the next departure time if available
+  const primaryDepartures: ProcessedDeparture[] = [];
+  departuresByLineAndDirection.forEach((sameLine) => {
+    const first = sameLine[0];
+    const second = sameLine[1];
+    const nextDepartureTimeLeft = second && typeof second.timeLeft === "number" ? second.timeLeft : undefined;
+    primaryDepartures.push({ ...first, nextDepartureTimeLeft });
   });
 
-  return departuresWithNext.slice(0, MAX_DEPARTURES_TO_DISPLAY);
+  // Sort primary departures by time
+  primaryDepartures.sort((a, b) => (a.timeLeft as number) - (b.timeLeft as number));
+
+  // Lock line 30 to the top: collect all line 30 entries first
+  const line30 = primaryDepartures.filter((d) => d.name === "30");
+  const others = primaryDepartures.filter((d) => d.name !== "30");
+
+  // Among the remaining, if there's a prioritized departure, move the soonest prioritized to front
+  const soonestPrioOther = others.find((d) => d.prioritized);
+  let orderedOthers = others;
+  if (soonestPrioOther) {
+    orderedOthers = [soonestPrioOther, ...others.filter((d) => d !== soonestPrioOther)];
+  }
+
+  return [...line30, ...orderedOthers];
 }

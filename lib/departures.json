@@ -1,29 +1,26 @@
 {
   "stations": [
     {
-      "name": "Kista",
-      "id": 740012883,
+      "name": "Gullmarsplan",
+      "id": 740021705,
       "departures": [
-        { "line": "179" },
-        { "line": "11", "directions": ["Kungsträdgården"], "prioritized": true },
-        { "line": "178" },
-        { "line": "197" },
-        { "line": "612" },
-        { "line": "685" },
-        { "line": "687" }
+        { "line": "19", "minTimeThreshold": 10 },
+        { "line": "17", "minTimeThreshold": 10 },
+        { "line": "18", "minTimeThreshold": 10 }
       ]
     },
     {
-      "name": "Helenelund",
-      "id": 740000701,
-      "departures": [{ "line": "41", "minTimeThreshold": 14 }]
+      "name": "Mårtensdal",
+      "id": 740024928,
+      "departures": [
+        { "line": "30", "minTimeThreshold": 5 , "directions": ["Solna"] }
+      ]
     },
     {
-      "name": "Kista alléväg",
-      "id": 740016366,
+      "name": "Luma",
+      "id": 740024929,
       "departures": [
-        { "line": "514X", "minTimeThreshold": 1 },
-        { "line": "514", "minTimeThreshold": 1 }
+        { "line": "30", "minTimeThreshold": 5 , "directions": ["Sickla"] }
       ]
     }
   ]

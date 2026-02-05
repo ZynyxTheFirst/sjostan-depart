@@ -16,7 +16,6 @@ export default async function Home() {
         <DepartureBoard rawDepartures={rawData} />
       </Suspense>
       <div className="absolute right-2 bottom-2 text-sm sm:text-base md:text-lg lg:text-xl text-gray-400">
-        Ugla
       </div>
     </>
   );
