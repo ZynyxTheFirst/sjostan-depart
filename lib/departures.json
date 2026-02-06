@@ -4,18 +4,18 @@
       "name": "Mårtensdal",
       "id": 740024928,
       "departures": [
-        { "line": "30", "minTimeThreshold": 2 , "directions": ["Solna"] },
-        { "line": "74", "minTimeThreshold": 2 , "directions": ["Moa"] },
-        { "line": "96", "minTimeThreshold": 2 , "directions": ["Odenplan"] }
+        { "line": "30", "minTimeThreshold": 3 , "directions": ["Solna"] },
+        { "line": "74", "minTimeThreshold": 3 , "directions": ["Moa"] },
+        { "line": "96", "minTimeThreshold": 3 , "directions": ["Odenplan"] }
       ]
     },
     {
       "name": "Luma",
       "id": 740024929,
       "departures": [
-        { "line": "30", "minTimeThreshold": 5 , "directions": ["Sickla"] },
-        { "line": "74", "minTimeThreshold": 2 , "directions": ["Sickla"]},
-        { "line": "96", "minTimeThreshold": 2 , "directions": ["Sickla"] }
+        { "line": "30", "minTimeThreshold": 3 , "directions": ["Sickla"] },
+        { "line": "74", "minTimeThreshold": 3 , "directions": ["Sickla"]},
+        { "line": "96", "minTimeThreshold": 3 , "directions": ["Sickla"] }
       ]
     }
   ]
