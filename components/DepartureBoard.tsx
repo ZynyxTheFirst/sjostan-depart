@@ -35,9 +35,9 @@ const commonPadding =
 const headerPadding =
   "px-1 sm:px-2 md:px-3 lg:px-4 py-1 sm:py-2 md:py-3 lg:py-3";
 const headerTextSize =
-  "text-lg sm:text-xl md:text-3xl lg:text-4xl";
+  "text-base sm:text-lg md:text-2xl lg:text-3xl";
 const cellTextSize =
-  "text-lg sm:text-xl md:text-3xl lg:text-4xl";
+  "text-base sm:text-lg md:text-2xl lg:text-3xl";
 
 const getRowBackground = (index: number) =>
   index % 2 !== 0 ? "bg-[#0a0a0a]" : "bg-[#141414]";

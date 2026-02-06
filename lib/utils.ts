@@ -64,11 +64,8 @@ export const formatMinutesToReadable = (minutes: number | string): string => {
   }
   if (minutes >= 60) {
     const hours = Math.floor(minutes / 60);
-    const remainingMinutes = minutes % 60;
-    if (remainingMinutes === 0) {
-      return `${hours} h`;
-    }
-    return `${hours} h, ${remainingMinutes} min`;
+    // For departures >= 1 hour, just show hours (no minutes)
+    return `${hours} h`;
   }
   return `${minutes} min`;
 };
