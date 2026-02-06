@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { ApiDeparture, Station } from "@/lib/types";
 import { formatMinutesToReadable } from "@/lib/utils";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -51,6 +51,74 @@ export default function DepartureBoard({ rawDepartures }: DepartureBoardProps) {
   const hideContact = searchParams.has("hideContact");
   const initialDepartures = processDepartures(rawDepartures);
 
+  // State for alerts
+  const [alertedDepartures, setAlertedDepartures] = useState<Set<string>>(new Set());
+  const [soundPlayedDepartures, setSoundPlayedDepartures] = useState<Set<string>>(new Set());
+  const [selectedDeparture, setSelectedDeparture] = useState<{ index: number; departure: any } | null>(null);
+
+  // Play alert sound
+  const playAlertSound = () => {
+    // Create a simple beep sound using Web Audio API
+    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.value = 800; // Hz
+    oscillator.type = "sine";
+    
+    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.5);
+  };
+
+  // Handle row click
+  const handleDepartureClick = (index: number, departure: any) => {
+    setSelectedDeparture({ index, departure });
+  };
+
+  // Handle alert confirmation
+  const handleAddAlert = () => {
+    if (selectedDeparture) {
+      const key = `${selectedDeparture.departure.name}-${selectedDeparture.departure.time}-${selectedDeparture.departure.station}`;
+      setAlertedDepartures((prev) => new Set([...prev, key]));
+      setSelectedDeparture(null);
+    }
+  };
+
+  // Handle alert removal
+  const handleRemoveAlert = () => {
+    if (selectedDeparture) {
+      const key = `${selectedDeparture.departure.name}-${selectedDeparture.departure.time}-${selectedDeparture.departure.station}`;
+      setAlertedDepartures((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(key);
+        return newSet;
+      });
+      setSoundPlayedDepartures((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(key);
+        return newSet;
+      });
+      setSelectedDeparture(null);
+    }
+  };
+
+  // Handle cancel
+  const handleCancel = () => {
+    setSelectedDeparture(null);
+  };
+
+  // Check if departure has an alert
+  const isAlerted = (departure: any) => {
+    const key = `${departure.name}-${departure.time}-${departure.station}`;
+    return alertedDepartures.has(key);
+  };
+
   // refresh the frontend every 30 seconds
   useEffect(() => {
     const interval = setInterval(() => {
@@ -59,6 +127,21 @@ export default function DepartureBoard({ rawDepartures }: DepartureBoardProps) {
 
     return () => clearInterval(interval);
   }, [router]);
+
+  // Play sound when alerted departure reaches 10 minutes
+  useEffect(() => {
+    initialDepartures.forEach((departure) => {
+      const key = `${departure.name}-${departure.time}-${departure.station}`;
+      const hasAlert = alertedDepartures.has(key);
+      const timeLeft = typeof departure.timeLeft === "number" ? departure.timeLeft : 999;
+      const hasPlayedSound = soundPlayedDepartures.has(key);
+
+      if (hasAlert && timeLeft <= 10 && !hasPlayedSound) {
+        playAlertSound();
+        setSoundPlayedDepartures((prev) => new Set([...prev, key]));
+      }
+    });
+  }, [initialDepartures, alertedDepartures, soundPlayedDepartures]);
 
   // no placeholder rows — table rows match actual departures
   const lastUpdated = new Date().toLocaleTimeString("sv-SE", {
@@ -152,11 +235,13 @@ export default function DepartureBoard({ rawDepartures }: DepartureBoardProps) {
             {initialDepartures.map((departure, index) => {
               const lineType = departure.transportType;
               const isUrgent = (departure.timeLeft as number) <= 10;
+              const hasAlert = isAlerted(departure);
 
               return (
                 <tr
                   key={`departure-${index}`}
-                  className={getRowBackground(index)}
+                  className={`${getRowBackground(index)} ${hasAlert ? "cursor-pointer hover:bg-red-950" : "cursor-pointer hover:bg-gray-800"}`}
+                  onClick={() => handleDepartureClick(index, departure)}
                 >
                   {/* <td className={commonPadding}>
                     <Image
@@ -192,7 +277,7 @@ export default function DepartureBoard({ rawDepartures }: DepartureBoardProps) {
                     </div>
                   </td>
                   <td
-                    className={`${commonPadding} text-left text-white ${cellTextSize} max-w-0`}
+                    className={`${commonPadding} text-left ${cellTextSize} max-w-0 ${hasAlert ? "text-red-600" : "text-white"}`}
                   >
                     <div className="whitespace-nowrap overflow-hidden text-ellipsis">
                       {departure.station}{" "}
@@ -217,6 +302,48 @@ export default function DepartureBoard({ rawDepartures }: DepartureBoardProps) {
           </tbody>
         </table>
       </div>
+
+      {/* Alert Modal */}
+      {selectedDeparture && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-gray-900 border-2 border-orange-500 rounded-lg p-6 md:p-8 max-w-md w-full">
+            <h3 className="text-xl md:text-2xl font-bold text-white mb-4">
+              {isAlerted(selectedDeparture.departure) 
+                ? `Remove Alert for Line ${selectedDeparture.departure.name}?` 
+                : `Add Alert for Line ${selectedDeparture.departure.name}?`}
+            </h3>
+            <div className="mb-6 space-y-2 text-gray-300">
+              <p>
+                <span className="text-orange-500">Departure:</span> {formatMinutesToReadable(selectedDeparture.departure.timeLeft)}
+              </p>
+              <p>
+                <span className="text-orange-500">Time:</span> {selectedDeparture.departure.time}
+              </p>
+              <p>
+                <span className="text-orange-500">Direction:</span> {selectedDeparture.departure.direction}
+              </p>
+            </div>
+            <div className="flex gap-4">
+              <button
+                onClick={isAlerted(selectedDeparture.departure) ? handleRemoveAlert : handleAddAlert}
+                className={`flex-1 text-white font-bold py-3 px-4 rounded-lg transition-colors ${
+                  isAlerted(selectedDeparture.departure)
+                    ? "bg-gray-600 hover:bg-gray-700"
+                    : "bg-red-600 hover:bg-red-700"
+                }`}
+              >
+                {isAlerted(selectedDeparture.departure) ? "Remove Alert" : "Add Alert"}
+              </button>
+              <button
+                onClick={handleCancel}
+                className="flex-1 bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 px-4 rounded-lg transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
